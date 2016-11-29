@@ -1,0 +1,123 @@
+swagger: '2.0'
+info:
+  title: slash.ai REST API
+  description: 'machine learning as a service'
+  version: 0.7.9
+host: api.slash.ai
+schemes:
+  - http
+basePath: /api/v2
+produces:
+  - application/json
+paths:
+  /alive:
+    get:
+      summary: 'Get the alive status of the v2 api platform'
+      description: 'Returns the status of the api version 2 backend.'
+      responses:
+        '200':
+         description: 'Is alive.'
+        '503':
+         description: 'Is down.'
+  /authcheck:
+    get:
+      summary: 'Check whether you have access to the v2 api platform.'
+      description: 'Confirms your clients accessability of the api version 2 backend.'
+      parameters:
+        - name: authorization
+          in: header
+          description: 'Your auth-token, generated via login.'
+          required: true
+          type: string
+          format: 'as returned by the login service.'
+        - name: content-type
+          in: header
+          description: 'You should always talk in JSON.'
+          required: true
+          type: string
+          format: 'application/json'
+      responses:
+        '200':
+          description: 'Your authentication and request are good.'
+        '400':
+          description: 'You are missing headers, probably content-type.'
+        '401':
+         description: 'You are missing the auth-token. authorization header.'
+        '403':
+         description: 'Your auth-token is bad.'
+        '412':
+         description: 'Your auth-token s user is missing scopes.'
+  /status/{apiId}:
+    get:
+      summary: 'Get the status of an asynchronous api action.'
+      description: 'Will return the status of an api action, containing possible errors or objectIds for e.g. created networks.'
+      parameters:
+       - name: apiId
+         in: path
+         description: 'The apiId of the api action returned by any response with status 202.'
+         required: true
+         type: string
+         format: 'UUID'
+      responses:
+        '200': 
+         description: 'Api action identifier response'
+         schema:
+          $ref: '#/definitions/ApiIdentifier'
+        '202':
+         description: 'Your api action is still waiting to be processed or currently processing.'
+         schema:
+          $ref: '#/definitions/ApiIdentifier'
+        '404':
+         description: 'There is not api action identifier for your requested apiId.'
+        '501':
+         description: 'There has been an error during the async. processing of your request.'
+         schema:
+          $ref: '#/definitions/ApiIdentifier'
+        '500':
+         description: 'An error happend while trying to process the api action identifier request.'
+         schema:
+          $ref: '#/definitions/Error'
+definitions:
+ ApiIdentifier:
+  type: object
+  properties:
+   apiId: 
+    type: string
+    description: 'UUID'
+   objectId:
+    type: string
+    description: 'UUID, the possible result of a create action.'
+   mandatorId:
+    type: string
+    description: 'UUID of the mandator that is linked to this action.'
+   userId:
+    type: string
+    description: 'UUID of the user that is linked to this action'
+   customerId:
+    type: string
+    description: 'String representation of the customer that has been linked to this action.'
+   status:
+    type: string
+    enum: [
+      'pending', 'done', 'error', 'received'
+      ]
+    description: 'The status of this api action, (if in done state) once collected by your client it will turn from done to received.'
+   type:
+    type: string
+    description: 'Describes the type of request this api action identifier was creaded for.'
+   error:
+    type: string
+    description: 'Defaults to null, will contain an error if one occures during the processing of the related action.'
+   result:
+    type: object
+    description: 'Contains any kind of result (JSON object) that a successfull async operation might have resulted in.'
+   jobId:
+    type: integer
+    format: int64
+    description: 'The JobID that was used for this action in our backend queue, might be helpfull for debugging.'
+ Error:
+  type: object
+  properties:
+   error:
+    type: string
+    description: 'Contains the information why the request failed or why the action stalled.'
