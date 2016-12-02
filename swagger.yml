@@ -48,9 +48,13 @@ paths:
         '412':
          description: 'Your auth-token s user is missing scopes.'
   /status/{apiId}:
-    get:
+   get:
       summary: 'Get the status of an asynchronous api action.'
       description: 'Will return the status of an api action, containing possible errors or objectIds for e.g. created networks.'
+      consumes:
+       - application/json
+      produces:
+       - application/json
       parameters:
        - name: apiId
          in: path
@@ -77,7 +81,65 @@ paths:
          description: 'An error happend while trying to process the api action identifier request.'
          schema:
           $ref: '#/definitions/Error'
+  /nn:
+   post:
+     summary: 'Creates a new neuronal network.'
+     description: 'You can use this endpoint to create a new neuronal network.'
+     consumes:
+      - application/json
+     produces:
+      - application/json
+     parameters:
+      - name: bodxy
+        in: body
+        required: true
+        schema:
+         $ref: '#/definitions/CreateNetwork'
+     responses:
+      '202':
+       description: 'Create was accepted, its processing.'
+       schema:
+        $ref: '#/definitions/AsyncResponse'
+      '400':
+       description: 'The request was missing parameters.'
+       schema:
+        $ref: '#/definitions/Error'
+      '500':
+       description: 'An error occured during the processing.'
+       schema:
+        $ref: '#/definitions/Error'
+      '507':
+       description: 'The server queue has reached maximum load, try again later.
+       schema:
+        $ref: '#/definitions/Error''
 definitions:
+ AsyncResponse:
+  type: object
+  properties:
+   id:
+    type: string
+    description: 'this is the apId you can use to check /status/{apiId}'
+   msg:
+    type: string
+   result:
+    type: object
+ CreateNetwork:
+  type: object
+  properties:
+   customer:
+    type: string
+    description: 'optional mapping to a customer'
+   features:
+    type: integer
+   units:
+    type: integer
+   outputs:
+    type: integer
+   networkType:
+    type: string
+    enum: [
+      'perceptron', 'deep', 'lstm', 'hopfield'
+      ]
  ApiIdentifier:
   type: object
   properties:
