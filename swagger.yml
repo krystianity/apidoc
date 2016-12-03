@@ -67,7 +67,7 @@ paths:
          type: string
          format: 'UUID'
       responses:
-        '200': 
+        '200':
          description: 'Api action identifier response'
          schema:
           $ref: '#/definitions/ApiIdentifier'
@@ -85,6 +85,7 @@ paths:
          description: 'An error happend while trying to process the api action identifier request.'
          schema:
           $ref: '#/definitions/Error'
+
   /nn:
    post:
      summary: 'Creates a new neuronal network.'
@@ -155,7 +156,7 @@ paths:
         schema:
          $ref: '#/definitions/AsyncResponse'
        '400':
-        descripion: 'You are missing or sending bad request data.'
+        description: 'You are missing or sending bad request data.'
         schema:
          $ref: '#/definitions/Error'
        '500':
@@ -192,6 +193,378 @@ paths:
         description: 'There has been an error while processing your network request.'
         schema:
          $ref: '#/definitions/Error'
+  /nn/{netId}:
+   get:
+    summary: 'Get information of a network.'
+    description: 'You can use this endpoint to get detailed information of your network.'
+    consumes:
+     - application/json
+    produces:
+      - application/json
+    parameters:
+      - name: netId
+        in: path
+        required: true
+        type: string
+        description: 'The id of the network.'
+        format: 'UUID'
+    responses:
+     '200':
+      description: 'A network for this id was found.'
+      schema:
+       $ref: '#/definitions/NetworkInformation'
+     '403':
+      description: 'You do not own this network.'
+      schema:
+       $ref: '#/definitions/Error'
+     '404':
+      description: 'A network with the provided id does not exist.'
+      schema:
+       $ref: '#/definitions/Error'
+     '500':
+      description: 'An error occured while trying get the network information.'
+      schema:
+       $ref: '#/definitions/Error'
+  /nn/customer/{customerId}:
+     get:
+      summary: 'Get information of a network.'
+      description: 'You can use this endpoint to get detailed information of your network, using the related
+      customer id.'
+      consumes:
+       - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          type: string
+          description: 'The id of the customer your network is related to.'
+          format: 'UUID'
+      responses:
+       '200':
+        description: 'A network for this id was found.'
+        schema:
+         $ref: '#/definitions/NetworkInformation'
+       '403':
+        description: 'You do not own this network.'
+        schema:
+         $ref: '#/definitions/Error'
+       '404':
+        description: 'A network with the provided id does not exist.'
+        schema:
+         $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while trying get the network information.'
+        schema:
+         $ref: '#/definitions/Error'
+
+  /nlp/classifier:
+     post:
+       summary: 'Creates a new nlp classifier'
+       description: 'You can use this endpoint to create a new nlp classifier'
+       consumes:
+        - application/json
+       produces:
+        - application/json
+       parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+           $ref: '#/definitions/CreateClassifier'
+       responses:
+        '202':
+         description: 'Create was accepted, its processing.'
+         schema:
+          $ref: '#/definitions/AsyncResponse'
+        '400':
+         description: 'The request was missing parameters.'
+         schema:
+          $ref: '#/definitions/Error'
+        '500':
+         description: 'An error occured during the processing.'
+         schema:
+          $ref: '#/definitions/Error'
+        '507':
+         description: 'The server queue has reached maximum load, try again later.
+         schema:
+          $ref: '#/definitions/Error'
+     delete:
+        summary: 'Deletes a nlp classifier'
+        description: 'You can use this endpoint to delete a nlp classifier.'
+        consumes:
+         - application/json
+        produces:
+         - application/json
+        parameters:
+         - name: body
+           in: body
+           required: true
+           schema:
+            $ref: '#/definitions/DeleteClassifier'
+        responses:
+         '200':
+          description: 'Classifier has been deleted'
+         '500':
+          description: 'There was an error during the deletion.'
+          schema:
+           $ref: '#/definitions/Error'
+     put:
+        summary: 'Train a classifier request.'
+        description: 'You can use this endpoint to train a nlp classifier.'
+        consumes:
+         - application/json
+        produces:
+         - application/json
+        parameters:
+         - name: body
+           in: body
+           required: true
+           schema:
+            $ref: '#/definitions/TrainClassifier'
+        responses:
+         '202':
+          description: 'The train request has been queued.'
+          schema:
+           $ref: '#/definitions/AsyncResponse'
+         '400':
+          description: 'You are missing or sending bad request data.'
+          schema:
+           $ref: '#/definitions/Error'
+         '500':
+          description: 'An error occured while trying to accept the train request.'
+          schema:
+           $ref: '#/definitions/Error'
+         '507':
+          description: 'The server queue has reached maximum load, try again later.'
+          schema:
+           $ref: '#/definitions/Error'
+     patch:
+        summary: 'Process a nlp classifier request.'
+        description: 'You can use this endpoint to request a nlp classifier process.'
+        consumes:
+         - application/json
+        produces:
+         - application/json
+        parameters:
+         - name: body
+           in: body
+           required: true
+           schema:
+            $ref: '#/definitions/ProcessClassifier'
+        responses:
+         '200':
+          description: 'Your classifier has successfully processed your request.'
+          schema:
+           $ref: '#/definitions/ClassifierProcessResponse'
+         '400':
+          description: 'You are missing or sending bad request data.'
+          schema:
+           $ref: '#/definitions/Error'
+         '500':
+          description: 'There has been an error while processing your classifier request.'
+          schema:
+           $ref: '#/definitions/Error'
+  /nlp/classifier/{classifierId}:
+     get:
+      summary: 'Get information of a nlp classifier.'
+      description: 'You can use this endpoint to get detailed information of your nlp classifier.'
+      consumes:
+       - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: classifierId
+          in: path
+          required: true
+          type: string
+          description: 'The id of the nlp classifier.'
+          format: 'UUID'
+      responses:
+       '200':
+        description: 'A classifier for this id was found.'
+        schema:
+         $ref: '#/definitions/ClassifierInformation'
+       '403':
+        description: 'You do not own this classifier.'
+        schema:
+         $ref: '#/definitions/Error'
+       '404':
+        description: 'A classifier with the provided id does not exist.'
+        schema:
+         $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while trying get the classifier information.'
+        schema:
+         $ref: '#/definitions/Error'
+  /nlp/classifier/customer/{customerId}:
+       get:
+        summary: 'Get information of a nlp classifier.'
+        description: 'You can use this endpoint to get detailed information of your nlp classifier, using the
+        related customer.'
+        consumes:
+         - application/json
+        produces:
+          - application/json
+        parameters:
+          - name: customerId
+            in: path
+            required: true
+            type: string
+            description: 'The id of the customer the nlp classifier is related to.'
+            format: 'UUID'
+        responses:
+         '200':
+          description: 'A classifier for this id was found.'
+          schema:
+           $ref: '#/definitions/ClassifierInformation'
+         '403':
+          description: 'You do not own this classifier.'
+          schema:
+           $ref: '#/definitions/Error'
+         '404':
+          description: 'A classifier with the provided id does not exist.'
+          schema:
+           $ref: '#/definitions/Error'
+         '500':
+          description: 'An error occured while trying get the classifier information.'
+          schema:
+           $ref: '#/definitions/Error'
+
+  /nlp/tools/{:language}/compare:
+   post:
+    summary: 'Compare two words.'
+    description: 'Use this endpoint to analyse the relation between two words.'
+    consumes:
+     - application/json
+    produces:
+      - application/json
+    parameters:
+     - name: body
+       in: body
+       required: true
+       schema:
+         $ref: '#/definitions/NLPCompareRequest'
+     - name: language
+       in: path
+       required: true
+       type: string
+       description: 'language code e.g. de or en'
+       format: '2 letter language code'
+    responses:
+     '200':
+      description: 'Your nlp request has been processed.'
+      schema:
+        $ref: '#/definitions/NLPCompareResult'
+     '400':
+       description: 'Your request data is missing parameters.'
+       schema:
+        $ref: '#/definitions/Error'
+     '500':
+      description: 'An error occured while processing your nlp request.'
+      schema:
+       $ref: '#/definitions/Error'
+  /nlp/tools/{:language}/word:
+     post:
+      summary: 'Analyse word.'
+      description: 'Use this endpoint to analyse a single word.'
+      consumes:
+       - application/json
+      produces:
+        - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+           $ref: '#/definitions/NLPWordRequest'
+       - name: language
+         in: path
+         required: true
+         type: string
+         description: 'language code e.g. de or en'
+         format: '2 letter language code'
+      responses:
+       '200':
+        description: 'Your nlp request has been processed.'
+        schema:
+          $ref: '#/definitions/NLPWordResult'
+       '400':
+         description: 'Your request data is missing parameters.'
+         schema:
+          $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while processing your nlp request.'
+        schema:
+         $ref: '#/definitions/Error'
+  /nlp/tools/{:language}/text:
+     post:
+      summary: 'Analyse sentence.'
+      description: 'Use this endpoint to analyse a whole sentence (or text block).'
+      consumes:
+       - application/json
+      produces:
+        - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+           $ref: '#/definitions/NLPTextRequest'
+       - name: language
+         in: path
+         required: true
+         type: string
+         description: 'language code e.g. de or en'
+         format: '2 letter language code'
+      responses:
+       '200':
+        description: 'Your nlp request has been processed.'
+        schema:
+          $ref: '#/definitions/NLPTextResult'
+       '400':
+         description: 'Your request data is missing parameters.'
+         schema:
+          $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while processing your nlp request.'
+        schema:
+         $ref: '#/definitions/Error'
+  /nlp/tools/{:language}/importance:
+     post:
+      summary: 'Get most important words in a sentence.'
+      description: 'Will identify the most important word(s) in a sentence. You can pass your own word(s).'
+      consumes:
+       - application/json
+      produces:
+        - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+           $ref: '#/definitions/NLPImportanceRequest'
+       - name: language
+         in: path
+         required: true
+         type: string
+         description: 'language code e.g. de or en'
+         format: '2 letter language code'
+      responses:
+       '200':
+        description: 'Your nlp request has been processed.'
+        schema:
+          $ref: '#/definitions/NLPImportanceResult'
+       '400':
+         description: 'Your request data is missing parameters.'
+         schema:
+          $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while processing your nlp request.'
+        schema:
+         $ref: '#/definitions/Error'
+
 definitions:
  AsyncResponse:
   type: object
@@ -203,6 +576,50 @@ definitions:
     type: string
    result:
     type: object
+ ClassifierInformation:
+  type: object
+  properties:
+   id:
+    type: string
+   mandatorId:
+    type: string
+   customerId:
+    type: string
+   locked:
+    type: boolean
+   size:
+    type: integer
+ NetworkInformation:
+  type: object
+  properties:
+   id:
+    type: string
+   mandatorId:
+    type: string
+   customerId:
+    type: string
+   features:
+    type: integer
+   units:
+    type: integer
+   outputs:
+    type: integer
+   locked:
+    type: boolean
+   size:
+    type: integer
+   type:
+    type: string
+ ProcessClassifier:
+  type: object
+  properties:
+   classifierId:
+    type: string
+   customer:
+    type: string
+    descripton: 'is optional.'
+   data:
+    type: string
  ProcessNetwork:
   type: object
   properties:
@@ -215,11 +632,33 @@ definitions:
     type: array
     items:
      type: float
+ ClassifierProcessResponseData:
+  type: object
+  properties:
+   label:
+    type: string
+   value:
+    type: double
+ ClassifierProcessResponse:
+  type: object
+  properties:
+   output:
+    type: array
+    items:
+     $ref: '#/definitions/ClassifierProcessResponseData'
  NetworkProcessResponse:
   type: object
   properties:
-   result:
-    type: object
+   output:
+    type: array
+    items:
+     type: float
+ CreateClassifier:
+  type: object
+  properties:
+   customer:
+    type: string
+    description: 'is optional.'
  CreateNetwork:
   type: object
   properties:
@@ -230,6 +669,8 @@ definitions:
     type: integer
    units:
     type: integer
+    description: 'if your network type is "deep" (or lstm) and you want multiple hidden layers
+    it is possible to provide an array of integers here e.g. [10,10,10] for 3 hidden layers with a size of 10 each.'
    outputs:
     type: integer
    networkType:
@@ -237,6 +678,19 @@ definitions:
     enum: [
       'perceptron', 'deep', 'lstm', 'hopfield'
       ]
+ TrainClassifier:
+  type: object
+  properties:
+   classifierId:
+    type: string
+   customer:
+    type: string
+    description: 'is optional.'
+   data:
+    type: array
+    description: 'array that contains your training data. Contains arrays(string) in itself.'
+    items:
+     $ref: '#/definitions/TrainClassifierData'
  TrainNetwork:
   type: object
   properties:
@@ -247,20 +701,32 @@ definitions:
     description: 'is optional.'
    data:
     type: array
-    description: 'array that contains your training data. Conmtains objects: { input: [0.1,0.2,0.3], output: [0.5,0.6]}'
-    items: 
+    description: 'array that contains your training data. Contains objects: { input: [0.1,0.2,0.3], output: [0.5,0.6]}'
+    items:
      $ref: '#/definitions/TrainNetworkData'
+ TrainClassifierData:
+  type: array
+  items:
+   type: string
  TrainNetworkData:
   type: object
   properties:
    input:
     type: array
-    items: 
+    items:
      type: float
    output:
     type: array
-    items: 
-     type: foat
+    items:
+     type: float
+ DeleteClassifier:
+  type: object
+  properties:
+   classifierId:
+    type: string
+   customer:
+    type: string
+    description: 'is optional.'
  DeleteNetwork:
   type: object
   properties:
@@ -272,7 +738,7 @@ definitions:
  ApiIdentifier:
   type: object
   properties:
-   apiId: 
+   apiId:
     type: string
     description: 'UUID'
    objectId:
@@ -306,6 +772,40 @@ definitions:
     type: integer
     format: int64
     description: 'The JobID that was used for this action in our backend queue, might be helpfull for debugging.'
+ NLPCompareRequest:
+  type: object
+  properties:
+    a:
+     type: string
+    b:
+     type: string
+ NLPCompareResult:
+  type: object
+ NLPWordRequest:
+  type: object
+  properties:
+    word:
+     type: string
+ NLPWordResult:
+  type: object
+ NLPTextRequest:
+  type: object
+  properties:
+    text:
+     type: string
+ NLPTextResult:
+  type: object
+ NLPImportanceRequest:
+  type: object
+  properties:
+    words:
+     type: array
+     items:
+      type: string
+    text:
+     type: string
+ NLPImportanceResult:
+  type: object
  Error:
   type: object
   properties:
