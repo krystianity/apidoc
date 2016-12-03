@@ -1,14 +1,21 @@
 swagger: '2.0'
 info:
-  title: slash.ai REST API
+  title: slash.ai REST API v2
   description: 'machine learning as a service'
   version: 0.7.9
-host: api.slash.ai
+#host: api.slash.ai
 schemes:
   - http
 basePath: /api/v2
 produces:
   - application/json
+securityDefinitions:
+  authToken:
+    type: apiKey
+    name: authorization
+    in: header
+security:
+  - authToken: []
 paths:
   /alive:
     get:
@@ -27,19 +34,6 @@ paths:
       description: 'Confirms your clients accessability of the api version 2 backend.'
       consumes:
        - application/json
-      parameters:
-        - name: authorization
-          in: header
-          description: 'Your auth-token, generated via login.'
-          required: true
-          type: string
-          format: 'as returned by the login service.'
-        - name: content-type
-          in: header
-          description: 'You should always talk in JSON.'
-          required: true
-          type: string
-          format: 'application/json'
       responses:
         '200':
           description: 'Your authentication and request are good.'
