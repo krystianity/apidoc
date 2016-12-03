@@ -14,6 +14,8 @@ paths:
     get:
       summary: 'Get the alive status of the v2 api platform'
       description: 'Returns the status of the api version 2 backend.'
+      consumes:
+       - application/json
       responses:
         '200':
          description: 'Is alive.'
@@ -23,6 +25,8 @@ paths:
     get:
       summary: 'Check whether you have access to the v2 api platform.'
       description: 'Confirms your clients accessability of the api version 2 backend.'
+      consumes:
+       - application/json
       parameters:
         - name: authorization
           in: header
@@ -90,7 +94,7 @@ paths:
      produces:
       - application/json
      parameters:
-      - name: bodxy
+      - name: body
         in: body
         required: true
         schema:
@@ -111,7 +115,83 @@ paths:
       '507':
        description: 'The server queue has reached maximum load, try again later.
        schema:
-        $ref: '#/definitions/Error''
+        $ref: '#/definitions/Error'
+   delete:
+      summary: 'Deletes a neuronal network'
+      description: 'You can use this endpoint to delete a neuronal network.'
+      consumes:
+       - application/json
+      produces:
+       - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+          $ref: '#/definitions/DeleteNetwork'
+      responses:
+       '200':
+        description: 'Network has been deleted'
+       '500':
+        description: 'There was an error during the deletion.'
+        schema:
+         $ref: '#/definitions/Error'
+   put:
+      summary: 'Train a network request.'
+      description: 'You can use this endpoint to train a network.'
+      consumes:
+       - application/json
+      produces:
+       - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+          $ref: '#/definitions/TrainNetwork'
+      responses:
+       '202':
+        description: 'The train request has been queued.'
+        schema:
+         $ref: '#/definitions/AsyncResponse'
+       '400':
+        descripion: 'You are missing or sending bad request data.'
+        schema:
+         $ref: '#/definitions/Error'
+       '500':
+        description: 'An error occured while trying to accept the train request.'
+        schema:
+         $ref: '#/definitions/Error'
+       '507':
+        description: 'The server queue has reached maximum load, try again later.'
+        schema:
+         $ref: '#/definitions/Error'
+   patch:
+      summary: 'Process a network request.'
+      description: 'You can use this endpoint to request a network process.'
+      consumes:
+       - application/json
+      produces:
+       - application/json
+      parameters:
+       - name: body
+         in: body
+         required: true
+         schema:
+          $ref: '#/definitions/ProcessNetwork'
+      responses:
+       '200':
+        description: 'Your network has successfully processed your request.'
+        schema:
+         $ref: '#/definitions/NetworkProcessResponse'
+       '400':
+        description: 'You are missing or sending bad request data.'
+        schema:
+         $ref: '#/definitions/Error'
+       '500':
+        description: 'There has been an error while processing your network request.'
+        schema:
+         $ref: '#/definitions/Error'
 definitions:
  AsyncResponse:
   type: object
@@ -121,6 +201,23 @@ definitions:
     description: 'this is the apId you can use to check /status/{apiId}'
    msg:
     type: string
+   result:
+    type: object
+ ProcessNetwork:
+  type: object
+  properties:
+   netId:
+    type: string
+   customer:
+    type: string
+    description: 'is optional.'
+   data:
+    type: array
+    items:
+     type: float
+ NetworkProcessResponse:
+  type: object
+  properties:
    result:
     type: object
  CreateNetwork:
@@ -140,6 +237,38 @@ definitions:
     enum: [
       'perceptron', 'deep', 'lstm', 'hopfield'
       ]
+ TrainNetwork:
+  type: object
+  properties:
+   netId:
+    type: string
+   customer:
+    type: string
+    description: 'is optional.'
+   data:
+    type: array
+    description: 'array that contains your training data. Conmtains objects: { input: [0.1,0.2,0.3], output: [0.5,0.6]}'
+    items: 
+     $ref: '#/definitions/TrainNetworkData'
+ TrainNetworkData:
+  type: object
+  properties:
+   input:
+    type: array
+    items: 
+     type: float
+   output:
+    type: array
+    items: 
+     type: foat
+ DeleteNetwork:
+  type: object
+  properties:
+   netId:
+    type: string
+   customer:
+    type: string
+    description: 'is optional.'
  ApiIdentifier:
   type: object
   properties:
