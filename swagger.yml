@@ -633,8 +633,8 @@ paths:
 
   /nlp/commands:
        post:
-        tags:
-         - commands
+         tags:
+          - commands
          summary: 'Creates a new nlp commands classifier'
          description: 'You can use this endpoint to create & train a new nlp commands classifier'
          consumes:
@@ -767,7 +767,7 @@ definitions:
     type: string
    customer:
     type: string
-    descripton: 'is optional.'
+    description: 'is optional.'
    input:
     type: string
  ProcessNetwork:
@@ -995,7 +995,7 @@ definitions:
     words:
      type: array
      items:
-      type: $ref: '#/definitions/NLPWordResult'
+      $ref: '#/definitions/NLPWordResult'
  NLPImportanceRequest:
   type: object
   properties:
@@ -1023,8 +1023,6 @@ definitions:
     type: array
     items:
      type: object
-   computeTime:
-    type: float
  Error:
   type: object
   properties:
