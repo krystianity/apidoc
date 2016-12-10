@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: slash.ai REST API v2
-  description: 'machine learning as a service'
+  description: 'Machine learning as a (REST API) service.'
   version: 0.7.9
 #host: api.slash.ai
 schemes:
@@ -16,6 +16,17 @@ securityDefinitions:
     in: header
 security:
   - authToken: []
+tags:
+ - name: auth
+   description: 'Authtoken API'
+ - name: network
+   description: 'Neuronal Networks API'
+ - name: classifier
+   description: 'Classifier API'
+ - name: nlp
+   description: 'Natural Language Processing Tools API'
+ - name: commands
+   description: 'NLP Commands Analyser API'
 paths:
   /alive:
     get:
@@ -82,6 +93,8 @@ paths:
 
   /nn:
    post:
+     tags:
+      - network
      summary: 'Creates a new neuronal network.'
      description: 'You can use this endpoint to create a new neuronal network.'
      consumes:
@@ -112,6 +125,8 @@ paths:
        schema:
         $ref: '#/definitions/Error'
    delete:
+      tags:
+       - network
       summary: 'Deletes a neuronal network'
       description: 'You can use this endpoint to delete a neuronal network.'
       consumes:
@@ -132,6 +147,8 @@ paths:
         schema:
          $ref: '#/definitions/Error'
    put:
+      tags:
+       - network
       summary: 'Train a network request.'
       description: 'You can use this endpoint to train a network.'
       consumes:
@@ -162,6 +179,8 @@ paths:
         schema:
          $ref: '#/definitions/Error'
    patch:
+      tags:
+       - network
       summary: 'Process a network request.'
       description: 'You can use this endpoint to request a network process.'
       consumes:
@@ -189,6 +208,8 @@ paths:
          $ref: '#/definitions/Error'
   /nn/{netId}:
    get:
+    tags:
+     - network
     summary: 'Get information of a network.'
     description: 'You can use this endpoint to get detailed information of your network.'
     consumes:
@@ -221,6 +242,8 @@ paths:
        $ref: '#/definitions/Error'
   /nn/customer/{customerId}:
      get:
+      tags:
+       - network
       summary: 'Get information of a network.'
       description: 'You can use this endpoint to get detailed information of your network, using the related
       customer id.'
@@ -255,6 +278,8 @@ paths:
 
   /nlp/classifier:
      post:
+       tags:
+        - classifier
        summary: 'Creates a new nlp classifier'
        description: 'You can use this endpoint to create a new nlp classifier'
        consumes:
@@ -281,10 +306,12 @@ paths:
          schema:
           $ref: '#/definitions/Error'
         '507':
-         description: 'The server queue has reached maximum load, try again later.
+         description: 'The server queue has reached maximum load, try again later.'
          schema:
           $ref: '#/definitions/Error'
      delete:
+        tags:
+         - classifier
         summary: 'Deletes a nlp classifier'
         description: 'You can use this endpoint to delete a nlp classifier.'
         consumes:
@@ -305,6 +332,8 @@ paths:
           schema:
            $ref: '#/definitions/Error'
      put:
+        tags:
+         - classifier
         summary: 'Train a classifier request.'
         description: 'You can use this endpoint to train a nlp classifier.'
         consumes:
@@ -335,6 +364,8 @@ paths:
           schema:
            $ref: '#/definitions/Error'
      patch:
+        tags:
+         - classifier
         summary: 'Process a nlp classifier request.'
         description: 'You can use this endpoint to request a nlp classifier process.'
         consumes:
@@ -362,6 +393,8 @@ paths:
            $ref: '#/definitions/Error'
   /nlp/classifier/{classifierId}:
      get:
+      tags:
+       - classifier
       summary: 'Get information of a nlp classifier.'
       description: 'You can use this endpoint to get detailed information of your nlp classifier.'
       consumes:
@@ -394,6 +427,8 @@ paths:
          $ref: '#/definitions/Error'
   /nlp/classifier/customer/{customerId}:
        get:
+        tags:
+         - classifier
         summary: 'Get information of a nlp classifier.'
         description: 'You can use this endpoint to get detailed information of your nlp classifier, using the
         related customer.'
@@ -428,6 +463,8 @@ paths:
 
   /nlp/tools/{:language}/compare:
    post:
+    tags:
+     - nlp
     summary: 'Compare two words.'
     description: 'Use this endpoint to analyse the relation between two words.'
     consumes:
@@ -461,6 +498,8 @@ paths:
        $ref: '#/definitions/Error'
   /nlp/tools/{:language}/word:
      post:
+      tags:
+       - nlp
       summary: 'Analyse word.'
       description: 'Use this endpoint to analyse a single word.'
       consumes:
@@ -494,6 +533,8 @@ paths:
          $ref: '#/definitions/Error'
   /nlp/tools/{:language}/text:
      post:
+      tags:
+       - nlp
       summary: 'Analyse sentence.'
       description: 'Use this endpoint to analyse a whole sentence (or text block).'
       consumes:
@@ -527,6 +568,8 @@ paths:
          $ref: '#/definitions/Error'
   /nlp/tools/{:language}/importance:
      post:
+      tags:
+       - nlp
       summary: 'Get most important words in a sentence.'
       description: 'Will identify the most important word(s) in a sentence. You can pass your own word(s).'
       consumes:
@@ -558,6 +601,119 @@ paths:
         description: 'An error occured while processing your nlp request.'
         schema:
          $ref: '#/definitions/Error'
+  /nlp/tools/language:
+       post:
+        tags:
+         - nlp
+        summary: 'Identify the language of a text.'
+        description: 'Will identify the language of a text and return a list of best matches.'
+        consumes:
+         - application/json
+        produces:
+          - application/json
+        parameters:
+         - name: body
+           in: body
+           required: true
+           schema:
+             $ref: '#/definitions/NLPTextRequest'
+        responses:
+         '200':
+          description: 'Your nlp request has been processed.'
+          schema:
+            $ref: '#/definitions/NLPLanguageResult'
+         '400':
+           description: 'Your request data is missing parameters.'
+           schema:
+            $ref: '#/definitions/Error'
+         '500':
+          description: 'An error occured while processing your nlp request.'
+          schema:
+           $ref: '#/definitions/Error'
+
+  /nlp/commands:
+       post:
+        tags:
+         - commands
+         summary: 'Creates a new nlp commands classifier'
+         description: 'You can use this endpoint to create & train a new nlp commands classifier'
+         consumes:
+          - application/json
+         produces:
+          - application/json
+         parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+             $ref: '#/definitions/CreateCommandsClassifier'
+         responses:
+          '202':
+           description: 'Create was accepted, its processing.'
+           schema:
+            $ref: '#/definitions/AsyncResponse'
+          '400':
+           description: 'The request was missing parameters.'
+           schema:
+            $ref: '#/definitions/Error'
+          '500':
+           description: 'An error occured during the processing.'
+           schema:
+            $ref: '#/definitions/Error'
+          '507':
+           description: 'The server queue has reached maximum load, try again later.'
+           schema:
+            $ref: '#/definitions/Error'
+       delete:
+          tags:
+           - commands
+          summary: 'Deletes a nlp commands classifier'
+          description: 'You can use this endpoint to delete a nlp commands classifier.'
+          consumes:
+           - application/json
+          produces:
+           - application/json
+          parameters:
+           - name: body
+             in: body
+             required: true
+             schema:
+              $ref: '#/definitions/DeleteClassifier'
+          responses:
+           '200':
+            description: 'Classifier has been deleted'
+           '500':
+            description: 'There was an error during the deletion.'
+            schema:
+             $ref: '#/definitions/Error'
+       patch:
+          tags:
+           - commands
+          summary: 'Process a nlp commands classifier request.'
+          description: 'You can use this endpoint to request a nlp commands classifier process.'
+          consumes:
+           - application/json
+          produces:
+           - application/json
+          parameters:
+           - name: body
+             in: body
+             required: true
+             schema:
+              $ref: '#/definitions/ProcessClassifier'
+          responses:
+           '200':
+            description: 'Your classifier has successfully processed your request.'
+            schema:
+             $ref: '#/definitions/CommandsClassifierProcessResponse'
+           '400':
+            description: 'You are missing or sending bad request data.'
+            schema:
+             $ref: '#/definitions/Error'
+           '500':
+            description: 'There has been an error while processing your classifier request.'
+            schema:
+             $ref: '#/definitions/Error'
 
 definitions:
  AsyncResponse:
@@ -612,7 +768,7 @@ definitions:
    customer:
     type: string
     descripton: 'is optional.'
-   data:
+   input:
     type: string
  ProcessNetwork:
   type: object
@@ -622,7 +778,7 @@ definitions:
    customer:
     type: string
     description: 'is optional.'
-   data:
+   input:
     type: array
     items:
      type: float
@@ -633,6 +789,21 @@ definitions:
     type: string
    value:
     type: double
+ CommandsClassifierProcessResponse:
+  type: object
+  properties:
+   output:
+    type: array
+    items:
+     $ref: '#/definitions/ClassifierProcessResponseData'
+   pealedInput:
+    type: string
+    description: 'input cleaned from command related words'
+   detectedNumerals:
+    type: array
+    items:
+     type: float
+    description: 'identified numerals/numbers in the pealed input string'
  ClassifierProcessResponse:
   type: object
   properties:
@@ -647,6 +818,23 @@ definitions:
     type: array
     items:
      type: float
+ CreateCommandsClassifier:
+  type: object
+  properties:
+    customer:
+     type: string
+     description: 'is optional.'
+    data:
+     type: array
+     items:
+      $ref: '#/definitions/TrainClassifierData'
+    filter:
+     type: array
+     items:
+      type: string
+    language:
+     type: string
+     description: '2 letter language code e.g. "en".'
  CreateClassifier:
   type: object
   properties:
@@ -782,6 +970,20 @@ definitions:
      type: string
  NLPWordResult:
   type: object
+  properties:
+    word:
+     type: string
+    phonetic:
+     type: array
+     items:
+      type: string
+    stem:
+     type: object
+     properties:
+      paice:
+       type: string
+      husk:
+       type: string
  NLPTextRequest:
   type: object
   properties:
@@ -789,6 +991,11 @@ definitions:
      type: string
  NLPTextResult:
   type: object
+  properties:
+    words:
+     type: array
+     items:
+      type: $ref: '#/definitions/NLPWordResult'
  NLPImportanceRequest:
   type: object
   properties:
@@ -798,8 +1005,26 @@ definitions:
       type: string
     text:
      type: string
+ NLPLanguageResult:
+  type: object
+  properties:
+   languages:
+    type: array
+    items:
+     type: array
  NLPImportanceResult:
   type: object
+  properties:
+   importance:
+    type: array
+    items:
+     type: object
+   ordered:
+    type: array
+    items:
+     type: object
+   computeTime:
+    type: float
  Error:
   type: object
   properties:
