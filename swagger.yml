@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
-  title: slash.ai REST API v2
-  description: 'Machine learning as a (REST API) service.'
+  title: slash.ai
+  description: 'Machine learning as a (REST API) service, in version 2.'
   version: 0.7.9
 #host: api.slash.ai
 schemes:
-  - http
-basePath: /api/v2
+  - https
+basePath: /api
 produces:
   - application/json
 securityDefinitions:
@@ -27,9 +27,91 @@ tags:
    description: 'Natural Language Processing Tools API'
  - name: commands
    description: 'NLP Commands Analyser API'
+ - name: status
+   description: 'Status Information API'
 paths:
-  /alive:
+
+  /customer/alive:
+      get:
+        tags:
+         - auth
+        summary: 'Get the alive status of the v1 token api platform'
+        description: 'Returns the status of the api authentication services backend.'
+        consumes:
+         - application/json
+        responses:
+          '200':
+           description: 'Is alive.'
+          '503':
+           description: 'Is down.'
+  /customer/login:
+     post:
+       tags:
+        - auth
+       summary: 'Generates a fresh api token.'
+       description: 'You can use this endpoint to create a fresh api token
+       to authorize.'
+       consumes:
+        - application/json
+       produces:
+        - application/json
+       parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+           $ref: '#/definitions/LoginRequest'
+       responses:
+        '201':
+         description: 'A new token has been generated.'
+         schema:
+          $ref: '#/definitions/LoginResponse'
+        '400':
+         description: 'The request was missing parameters.'
+         schema:
+          $ref: '#/definitions/Error'
+        '500':
+         description: 'An error occured during the processing.'
+         schema:
+          $ref: '#/definitions/Error'
+        '403':
+         description: 'The login credentials used were wrong.'
+         schema:
+          $ref: '#/definitions/Error'
+  /customer/register:
+       post:
+         tags:
+          - auth
+         summary: 'Register for a new main (mandator) account.'
+         description: 'You can use this endpoint to register a new account.'
+         consumes:
+          - application/json
+         produces:
+          - application/json
+         parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+             $ref: '#/definitions/LoginRequest'
+         responses:
+          '201':
+           description: 'A new account has been created.'
+           schema:
+            $ref: '#/definitions/LoginResponse'
+          '400':
+           description: 'The request was missing parameters.'
+           schema:
+            $ref: '#/definitions/Error'
+          '500':
+           description: 'An error occured during the processing.'
+           schema:
+            $ref: '#/definitions/Error'
+
+  /v2/alive:
     get:
+      tags:
+       - status
       summary: 'Get the alive status of the v2 api platform'
       description: 'Returns the status of the api version 2 backend.'
       consumes:
@@ -39,8 +121,10 @@ paths:
          description: 'Is alive.'
         '503':
          description: 'Is down.'
-  /authcheck:
+  /v2/authcheck:
     get:
+      tags:
+       - status
       summary: 'Check whether you have access to the v2 api platform.'
       description: 'Confirms your clients accessability of the api version 2 backend.'
       consumes:
@@ -56,8 +140,10 @@ paths:
          description: 'Your auth-token is bad.'
         '412':
          description: 'Your auth-token s user is missing scopes.'
-  /status/{apiId}:
+  /v2/status/{apiId}:
    get:
+      tags:
+       - status
       summary: 'Get the status of an asynchronous api action.'
       description: 'Will return the status of an api action, containing possible errors or objectIds for e.g. created networks.'
       consumes:
@@ -91,7 +177,7 @@ paths:
          schema:
           $ref: '#/definitions/Error'
 
-  /nn:
+  /v2/nn:
    post:
      tags:
       - network
@@ -121,7 +207,7 @@ paths:
        schema:
         $ref: '#/definitions/Error'
       '507':
-       description: 'The server queue has reached maximum load, try again later.
+       description: 'The server queue has reached maximum load, try again later.'
        schema:
         $ref: '#/definitions/Error'
    delete:
@@ -206,7 +292,7 @@ paths:
         description: 'There has been an error while processing your network request.'
         schema:
          $ref: '#/definitions/Error'
-  /nn/{netId}:
+  /v2/nn/{netId}:
    get:
     tags:
      - network
@@ -240,7 +326,7 @@ paths:
       description: 'An error occured while trying get the network information.'
       schema:
        $ref: '#/definitions/Error'
-  /nn/customer/{customerId}:
+  /v2/nn/customer/{customerId}:
      get:
       tags:
        - network
@@ -276,7 +362,7 @@ paths:
         schema:
          $ref: '#/definitions/Error'
 
-  /nlp/classifier:
+  /v2/nlp/classifier:
      post:
        tags:
         - classifier
@@ -391,7 +477,7 @@ paths:
           description: 'There has been an error while processing your classifier request.'
           schema:
            $ref: '#/definitions/Error'
-  /nlp/classifier/{classifierId}:
+  /v2/nlp/classifier/{classifierId}:
      get:
       tags:
        - classifier
@@ -425,7 +511,7 @@ paths:
         description: 'An error occured while trying get the classifier information.'
         schema:
          $ref: '#/definitions/Error'
-  /nlp/classifier/customer/{customerId}:
+  /v2/nlp/classifier/customer/{customerId}:
        get:
         tags:
          - classifier
@@ -461,7 +547,7 @@ paths:
           schema:
            $ref: '#/definitions/Error'
 
-  /nlp/tools/{:language}/compare:
+  /v2/nlp/tools/{:language}/compare:
    post:
     tags:
      - nlp
@@ -496,7 +582,7 @@ paths:
       description: 'An error occured while processing your nlp request.'
       schema:
        $ref: '#/definitions/Error'
-  /nlp/tools/{:language}/word:
+  /v2/nlp/tools/{:language}/word:
      post:
       tags:
        - nlp
@@ -531,7 +617,7 @@ paths:
         description: 'An error occured while processing your nlp request.'
         schema:
          $ref: '#/definitions/Error'
-  /nlp/tools/{:language}/text:
+  /v2/nlp/tools/{:language}/text:
      post:
       tags:
        - nlp
@@ -566,7 +652,7 @@ paths:
         description: 'An error occured while processing your nlp request.'
         schema:
          $ref: '#/definitions/Error'
-  /nlp/tools/{:language}/importance:
+  /v2/nlp/tools/{:language}/importance:
      post:
       tags:
        - nlp
@@ -601,7 +687,7 @@ paths:
         description: 'An error occured while processing your nlp request.'
         schema:
          $ref: '#/definitions/Error'
-  /nlp/tools/language:
+  /v2/nlp/tools/language:
        post:
         tags:
          - nlp
@@ -631,7 +717,7 @@ paths:
           schema:
            $ref: '#/definitions/Error'
 
-  /nlp/commands:
+  /v2/nlp/commands:
        post:
          tags:
           - commands
@@ -781,14 +867,16 @@ definitions:
    input:
     type: array
     items:
-     type: float
+     type: number
+     format: float
  ClassifierProcessResponseData:
   type: object
   properties:
    label:
     type: string
    value:
-    type: double
+    type: number
+    format: double
  CommandsClassifierProcessResponse:
   type: object
   properties:
@@ -802,7 +890,8 @@ definitions:
    detectedNumerals:
     type: array
     items:
-     type: float
+     type: number
+     format: float
     description: 'identified numerals/numbers in the pealed input string'
  ClassifierProcessResponse:
   type: object
@@ -817,7 +906,8 @@ definitions:
    output:
     type: array
     items:
-     type: float
+     type: number
+     format: float
  CreateCommandsClassifier:
   type: object
   properties:
@@ -896,11 +986,13 @@ definitions:
    input:
     type: array
     items:
-     type: float
+     type: number
+     format: float
    output:
     type: array
     items:
-     type: float
+     type: number
+     format: float
  DeleteClassifier:
   type: object
   properties:
@@ -1012,6 +1104,8 @@ definitions:
     type: array
     items:
      type: array
+     items:
+      type: string
  NLPImportanceResult:
   type: object
   properties:
@@ -1023,6 +1117,23 @@ definitions:
     type: array
     items:
      type: object
+ LoginRequest:
+  type: object
+  properties:
+   email:
+    type: string
+   password:
+    type: string
+ LoginResponse:
+  type: object
+  properties:
+   token:
+    type: string
+    description: 'Api token used to authorize.'
+   lifetime:
+    type: number
+    format: int32
+    description: 'Lifetime of the generated api token in milliseconds.'
  Error:
   type: object
   properties:
