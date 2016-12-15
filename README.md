@@ -1,3 +1,5 @@
+![slash.ai](https://cdn1.teamhellfall.de/contentdelivery/17c788d5-cef6-4685-80ad-cd8e32663714.0510289d-45e9-4c18-9508-996474930629.png)
+
 # slash.ai REST API documentation
 swagger-ui api description for slash.ai's REST services
 
