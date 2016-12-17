@@ -361,6 +361,72 @@ paths:
         description: 'An error occured while trying get the network information.'
         schema:
          $ref: '#/definitions/Error'
+  /v2/nn/stack:
+   put:
+     tags:
+      - network
+     summary: 'Stack a train a network request.'
+     description: 'You can use this endpoint to stack multiple training sets, to execute them later.'
+     consumes:
+      - application/json
+     produces:
+      - application/json
+     parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+         $ref: '#/definitions/TrainNetwork'
+     responses:
+      '200':
+       description: 'The train request has been stacked.'
+       schema:
+        $ref: '#/definitions/AsyncResponse'
+      '400':
+       description: 'You are missing or sending bad request data.'
+       schema:
+        $ref: '#/definitions/Error'
+      '500':
+       description: 'An error occured while trying to accept the train request.'
+       schema:
+        $ref: '#/definitions/Error'
+      '507':
+       description: 'The server queue has reached maximum load, try again later.'
+       schema:
+        $ref: '#/definitions/Error'
+  /v2/nn/stack/run:
+     put:
+       tags:
+        - network
+       summary: 'Run stacked train requests for a network.'
+       description: 'You can use this endpoint to execute the training of all stacked training sets for a network.'
+       consumes:
+        - application/json
+       produces:
+        - application/json
+       parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+           $ref: '#/definitions/RunStackTrainNetwork'
+       responses:
+        '202':
+         description: 'All stacked train request have been queued in a single training request.'
+         schema:
+          $ref: '#/definitions/AsyncResponse'
+        '400':
+         description: 'You are missing or sending bad request data.'
+         schema:
+          $ref: '#/definitions/Error'
+        '500':
+         description: 'An error occured while trying to accept the train request.'
+         schema:
+          $ref: '#/definitions/Error'
+        '507':
+         description: 'The server queue has reached maximum load, try again later.'
+         schema:
+          $ref: '#/definitions/Error'
 
   /v2/nlp/classifier:
      post:
@@ -963,6 +1029,14 @@ definitions:
     description: 'array that contains your training data. Contains arrays(string) in itself.'
     items:
      $ref: '#/definitions/TrainClassifierData'
+ RunStackTrainNetwork:
+  type: object
+  properties:
+    netId:
+     type: string
+    customer:
+     type: string
+     description: 'is optional.'
  TrainNetwork:
   type: object
   properties:
