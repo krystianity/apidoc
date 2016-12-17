@@ -136,6 +136,8 @@ paths:
           description: 'You are missing headers, probably content-type.'
         '401':
          description: 'You are missing the auth-token. authorization header.'
+        '402':
+         description: 'Your free content is used, please register a payment method for your account.'
         '403':
          description: 'Your auth-token is bad.'
         '412':
@@ -176,6 +178,25 @@ paths:
          description: 'An error happend while trying to process the api action identifier request.'
          schema:
           $ref: '#/definitions/Error'
+  /v2/access:
+     get:
+        tags:
+         - status
+        summary: 'Get information of your account s api actions'
+        description: 'Will return information about your accounts api actions e.g. request counts.'
+        consumes:
+         - application/json
+        produces:
+         - application/json
+        responses:
+          '200':
+           description: 'Access information response'
+           schema:
+            $ref: '#/definitions/AccessInformation'
+          '500':
+           description: 'An error happend while trying to get your access information.'
+           schema:
+            $ref: '#/definitions/Error'
 
   /v2/nn:
    post:
@@ -1208,6 +1229,26 @@ definitions:
     type: number
     format: int32
     description: 'Lifetime of the generated api token in milliseconds.'
+ AccessInformation:
+  type: object
+  properties:
+    mandatorId:
+     type: string
+    total:
+     type: string
+     description: 'bigint, total count of requests'
+    light:
+     type: string
+     description: 'bigint, total count of simple requests e.g. process'
+    heavy:
+     type: string
+     description: 'bigint, total count of memory heavy requests e.g. train'
+    freeLight:
+     type: number
+     format: int32
+    freeHeavy:
+     type: number
+     format: int32
  Error:
   type: object
   properties:
